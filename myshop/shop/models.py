@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django_admin_filters import MultiChoice
+
 
 COLOR = (
   ('RD', 'Red'),
@@ -23,7 +23,7 @@ COLOR = (
 
 
 class Channel(models.Model):
-    name = models.CharField(max_length=200, default='E-Commerce')
+    name = models.CharField(max_length=200, null=True)
     slug = models.SlugField(max_length=200, unique=True)
 
     class Meta:
@@ -38,7 +38,7 @@ class Channel(models.Model):
         return self.name
 
 class Family(models.Model):
-    name = models.CharField(max_length=200, default='Furniture')
+    name = models.CharField(max_length=200, null=True)
     slug = models.SlugField(max_length=200, unique=True)
 
     class Meta:
@@ -73,7 +73,8 @@ class Materials(models.Model):
 class Category(models.Model):
     family = models.ForeignKey(Family,
                                 related_name = 'categories',
-                                on_delete=models.CASCADE, null=True)
+                                on_delete=models.CASCADE)
+    # family = models.OneToOneField(Family, on_delete=models.CASCADE, parent_link=True, null=True)
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
 
@@ -92,17 +93,21 @@ class Category(models.Model):
         return reverse('shop:product_list_by_category', args=[self.slug])
 
 class Product(models.Model):
-    channel = models.ForeignKey(Channel,
-                                related_name='products_channel',
-                                on_delete=models.CASCADE, null=True)
+    # channel = models.ForeignKey(Channel,
+    #                             related_name='products_channel',
+    #                             on_delete=models.CASCADE, null=True)
+    channel = models.ManyToManyField(Channel)
+    family = models.ForeignKey(Family,
+                related_name='products_family',
+                on_delete=models.CASCADE, null=True)
     category = models.ForeignKey(Category,
                 related_name='products',
                 on_delete=models.CASCADE, null=True)
     code = models.CharField(max_length=200, blank=True)
     name = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=200, blank=True)
-    image = models.ImageField(upload_to='products/%Y/%m/%d', blank=True)
-    image_tech = models,models.ImageField(upload_to='products/technique', height_field=None, width_field=None, max_length=None, blank=True)
+    image = models.ImageField(upload_to='image_products/general', blank=True)
+    image_tech = models,models.ImageField(upload_to='image_products/technique', height_field=None, width_field=None, max_length=None, blank=True)
     description = models.TextField(blank=True)
     color = models.CharField(max_length=2, default='RD', choices=COLOR)
     material = models.ForeignKey(Materials, 

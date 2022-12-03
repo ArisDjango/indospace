@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-n81$g^e%p4#0@1vuoh852=$qye*wmp=gr3efrmy!b)7m884&gq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','127.0.0.1','167.172.70.208', '147.139.182.71']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# CSRF_TRUSTED_ORIGINS=['http://167.172.70.208:8003'] #port diganti sesuai app image docker
+CSRF_TRUSTED_ORIGINS=['http://147.139.182.71:8000']
+
 
 
 # Application definition
@@ -42,6 +46,7 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',
     'import_export',
     'django_admin_filters',
+    
 ]
 
 MIDDLEWARE = [
@@ -80,13 +85,33 @@ WSGI_APPLICATION = 'myshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# Original ----------------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+# Production --------------------
+    # 'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': 'database1',
+    #         'USER': 'database1_role',
+    #         'PASSWORD': 'database1_password',
+    #         'HOST': 'database_shop',
+    #         'PORT': '5432'
+    # }
+
+    #local
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'indospace',
+        'USER': 'aris',
+        'PASSWORD': 'aris1985',
+    }
+
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
